@@ -30,20 +30,20 @@ class GameWindow < Gosu::Window
 
 	def update
 		if Gosu::button_down? Gosu::KbLeft or Gosu::button_down? Gosu::GpLeft then
-			@player.turn_left
+			@player.turn_left(self.deltatime)
     	end
 		if Gosu::button_down? Gosu::KbRight or Gosu::button_down? Gosu::GpRight then
-			@player.turn_right
+			@player.turn_right(self.deltatime)
 		end
 		if Gosu::button_down? Gosu::KbUp or Gosu::button_down? Gosu::GpButton0 then
 			@player.accelerate
 		end
 
 		if Gosu::button_down? Gosu::KbA or Gosu::button_down? Gosu::GpLeft then
-			@versus.turn_left
+			@versus.turn_left(self.deltatime)
     	end
 		if Gosu::button_down? Gosu::KbD or Gosu::button_down? Gosu::GpRight then
-			@versus.turn_right
+			@versus.turn_right(self.deltatime)
 		end
 		if Gosu::button_down? Gosu::KbW or Gosu::button_down? Gosu::GpButton0 then
 			@versus.accelerate
@@ -102,11 +102,11 @@ class GameWindow < Gosu::Window
   		# end
   		# @bg.draw
   		100.times do
-  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.2..3.0), rand(0.2..3.0), Gosu::Color.argb(0x4000ffff))
-  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.2..3.0), rand(0.2..3.0), Gosu::Color.argb(0x40ff00ff))
-  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.2..3.0), rand(0.2..3.0), Gosu::Color.argb(0x40ffff00))
-  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.2..3.0), rand(0.2..3.0), Gosu::Color.argb(0x40ffffff))
-  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.2..3.0), rand(0.2..3.0), Gosu::Color.argb(0x40ffffff))
+  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.3..3.5), rand(0.3..3.5), Gosu::Color.argb(0x4000ffff))
+  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.3..3.5), rand(0.3..3.5), Gosu::Color.argb(0x40ff00ff))
+  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.3..3.5), rand(0.3..3.5), Gosu::Color.argb(0x40ffff00))
+  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.3..3.5), rand(0.3..3.5), Gosu::Color.argb(0x40ffffff))
+  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.3..3.5), rand(0.3..3.5), Gosu::Color.argb(0x40ffffff))
   		end
   		if @acc == 0
   			@player.draw

@@ -36,12 +36,12 @@ class Vessel
 		@vy += Gosu::offset_y(@angle, 0.5)
 	end
 
-	def turn_left
-		@angle -= 4.5
+	def turn_left(dt)
+		@angle -= 1 * dt / 3
 	end
 
-	def turn_right
-		@angle += 4.5
+	def turn_right(dt)
+		@angle += 1 * dt / 3
 	end
 	
 	def move(dt)
