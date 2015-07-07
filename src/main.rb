@@ -88,6 +88,18 @@ class GameWindow < Gosu::Window
 			@player.score += 1 if @versus.life <= 1
 			@versus.score += 1 if @player.life <= 1
 		end
+
+		@versus.bullarr.each do |b|
+			@player.bullarr.each do |b2|
+				if b.life > 0 && b2.life > 0 && check_for_b_collide(b, b2) == 1
+					@booms.push(Boom.new(b.x, b.y, b.angle, b.who))
+					@booms.push(Boom.new(b2.x, b2.y, b2.angle, b2.who))
+					Boom.play
+					b.life = b.life - 1
+					b2.life = b2.life - 1
+				end
+			end
+		end
 	end
 
 	def draw
@@ -135,6 +147,13 @@ class GameWindow < Gosu::Window
 
 	def check_for_collide(inst1, inst2)
 		if inst2.x >= (inst1.x - inst1.width / 2) && inst2.x <= (inst1.x + inst1.width / 2) && inst2.y >= (inst1.y - inst1.height / 2) && inst2.y <= (inst1.y + inst1.height / 2)
+			return 1
+		end
+		return 0
+	end
+
+	def check_for_b_collide(inst1, inst2)
+		if inst2.x >= (inst1.x - inst1.width) && inst2.x <= (inst1.x + inst1.width) && inst2.y >= (inst1.y - inst1.height) && inst2.y <= (inst1.y + inst1.height)
 			return 1
 		end
 		return 0

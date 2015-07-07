@@ -1,6 +1,6 @@
 class Bullet
 	attr_accessor :x, :y, :life
-	attr_reader :texture, :sound, :width, :height
+	attr_reader :texture, :sound, :width, :height, :angle, :who
 
 	def initialize(angle, x, y, vx, vy, who = 0)
 		@who = who
