@@ -1,6 +1,5 @@
 class Vessel
-	attr_reader :angle, :bullarr, :width, :height, :x, :y
-	# attr_reader :life
+	attr_reader :angle, :bullarr, :width, :height, :x, :y, :who, :vroom
 	attr_accessor :score
 
 
@@ -13,7 +12,8 @@ class Vessel
 			@skin = Gosu::Image.new("media/images/vesselvs.png")
 			@skin_on = Gosu::Image.new("media/images/vesselvs-on.png")
 		end
-		@sound = Gosu::Sample.new("media/samples/shot.mp3")
+		@sound = Gosu::Sample.new("media/samples/punch.mp3")
+		@vroom = Gosu::Sample.new("media/samples/starship.wav")
 		@x = @y = @vx = @vy = @angle = 0.0
 		@bullarr = Array.new
 		@width = @skin.width
@@ -78,7 +78,7 @@ class Vessel
 
 	def shoot
 		@bullarr << Bullet.new(@angle, @x, @y, @vx, @vy, @who)
-		@sound.play(0.1, 0.5)
+		@sound.play(0.08, 0.5)
 		@bullarr = @bullarr.drop_while { |b| b.y <= (0 - (b.texture.height / 2)) || b.x <= (0 - (b.texture.width / 2)) || b.y >= (WinY + (b.texture.height / 2)) || b.x >= (WinX + (b.texture.width / 2)) }
 		@bullarr = @bullarr.drop_while { |b| b.life < 1}
 	end
