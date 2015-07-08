@@ -193,7 +193,7 @@ class GameWindow < Gosu::Window
 			# if @s.playing?
 				@sv = @player.vroom.play
 			# end
-		elsif id == Gosu::KbN
+		elsif id == Gosu::KbJ
 			@player.shoot(1)
 		elsif id == Gosu::KbSpace
 			@versus.shoot(1)
@@ -201,7 +201,7 @@ class GameWindow < Gosu::Window
 			@player.shoot(2)
 		elsif id == Gosu::KbV
 			@versus.shoot(2)
-		elsif id == Gosu::KbF
+		elsif id == Gosu::KbH
 			@player.bubble
 		elsif id == Gosu::KbJ
 			@versus.bubble
