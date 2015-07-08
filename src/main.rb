@@ -56,12 +56,12 @@ class GameWindow < Gosu::Window
 
   		@player.bullarr.each do |b|
   			b.move(self.deltatime)
-  			@smokes.push(Smoke.new(b.x, b.y, b.angle, b.who)) if b.life > 0 && b.force == 2 && rand(1..10) == 2
+  			@smokes.push(Smoke.new(b.x, b.y, b.angle, b.who)) if b.life > 0 && b.force == 3 && rand(1..10) == 2
   		end
 
   		@versus.bullarr.each do |b|
   			b.move(self.deltatime)
-  			@smokes.push(Smoke.new(b.x, b.y, b.angle, b.who)) if b.life > 0 && b.force == 2 && rand(1..10) == 2 
+  			@smokes.push(Smoke.new(b.x, b.y, b.angle, b.who)) if b.life > 0 && b.force == 3 && rand(1..10) == 2 
   		end
 
   		@old = Gosu::milliseconds
