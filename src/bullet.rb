@@ -22,7 +22,7 @@ class Rocket
 		@width = @texture.width
 		@height = @texture.height
 		@life = 1
-		@force = 2
+		@force = 3
 
 		@launch.play(0.06, 2)
 	end
@@ -32,8 +32,8 @@ class Rocket
 	end
 
 	def move(dt)
-		@x += @vx * dt / 15
-		@y += @vy * dt / 15
+		@x += @vx * dt / 12
+		@y += @vy * dt / 12
 	end
 
 	def draw

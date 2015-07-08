@@ -24,7 +24,7 @@ class GameWindow < Gosu::Window
  		@acc = @vacc = 0
  		@music.play(true)
  		@old = Gosu::milliseconds
-		@font = Gosu::Font.new(40)
+		@font = Gosu::Font.new(30)
 		@booms = Array.new
 		@smokes = Array.new
 		# @bg = Gosu::draw_rect(500.0, 500.0, 50.0, 50.0, Gosu::Color.argb(0xff00ffff))
@@ -73,8 +73,8 @@ class GameWindow < Gosu::Window
 			if b.life > 0 && check_for_collide(@versus, b) == 1
 				@booms.push(Boom.new(@versus.x, @versus.y, @versus.angle, @versus.who))
 				Boom.play
+				@player.score += 1 if @versus.life - b.force == 0
 				@versus.hit(b.force)
-				@player.score += 1 if @versus.life <= 0
 				b.life = b.life - 1
 			end
 		end
@@ -83,8 +83,8 @@ class GameWindow < Gosu::Window
 			if b.life > 0 && check_for_collide(@player, b) == 1
 				@booms.push(Boom.new(@player.x, @player.y, @player.angle, @player.who))
 				b.boom
+				@versus.score += 1 if @player.life - b.force == 0
 				@player.hit(b.force)
-				@versus.score += 1 if @player.life <= 0
 				b.life = b.life - 1
 			end
 		end
@@ -153,6 +153,9 @@ class GameWindow < Gosu::Window
   		@font.draw("P1 Life : #{@versus.life}", WinX / 7, WinY / 10, 3, 1.0, 1.0, 0xff_00ff00)
   		@font.draw("P2 Life : #{@player.life}", WinX / 7 * 6, WinY / 10, 3, 1.0, 1.0, 0xff_0000ff)
 
+  		@font.draw("P1 Shield : #{@versus.ns}", WinX / 7, WinY / 10 * 9, 3, 1.0, 1.0, 0xff_00ff00)
+  		@font.draw("P2 Shield : #{@player.ns}", WinX / 7 * 6, WinY / 10 * 9, 3, 1.0, 1.0, 0xff_0000ff)
+
   		@font.draw("P1 Rocket : #{@versus.rocket}", WinX / 7, WinY / 20 * 19, 3, 1.0, 1.0, 0xff_00ff00)
   		@font.draw("P2 Rocket : #{@player.rocket}", WinX / 7 * 6, WinY / 20 * 19, 3, 1.0, 1.0, 0xff_0000ff)
 
@@ -198,6 +201,10 @@ class GameWindow < Gosu::Window
 			@player.shoot(2)
 		elsif id == Gosu::KbV
 			@versus.shoot(2)
+		elsif id == Gosu::KbF
+			@player.bubble
+		elsif id == Gosu::KbJ
+			@versus.bubble
 		end
 	end
 

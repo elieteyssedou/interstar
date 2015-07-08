@@ -1,5 +1,5 @@
 class Vessel
-	attr_reader :angle, :bullarr, :width, :height, :x, :y, :who, :vroom, :rocket, :boom
+	attr_reader :angle, :bullarr, :width, :height, :x, :y, :who, :vroom, :rocket, :boom, :ns
 	attr_accessor :score
 
 
@@ -26,6 +26,7 @@ class Vessel
 	def warp(x, y)
 		@lst = Gosu::milliseconds
 		@shield = Bubble.new(@who)
+		@ns = 1
 		@rocket = 3
 		@x = x
 		@y = y
@@ -87,6 +88,12 @@ class Vessel
 		# @sound.play(0.08, 0.5)
 		@bullarr = @bullarr.drop_while { |b| b.y <= (0 - (b.texture.height / 2)) || b.x <= (0 - (b.texture.width / 2)) || b.y >= (WinY + (b.texture.height / 2)) || b.x >= (WinX + (b.texture.width / 2)) }
 		@bullarr = @bullarr.drop_while { |b| b.life < 1}
+	end
+
+	def bubble
+		@lst = Gosu::milliseconds
+		@shield = Bubble.new(@who) if @ns > 0
+		@ns -= 1 if @ns > 0
 	end
 
 	def hit(force)
