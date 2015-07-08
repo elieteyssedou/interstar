@@ -18,7 +18,7 @@ class WormHole
 	end
 
 	def play
-		@sound.play(0.6, 1)
+		@sound.play(0.4, 1)
 	end
 
 	def draw_in
