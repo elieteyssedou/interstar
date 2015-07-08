@@ -203,7 +203,7 @@ class GameWindow < Gosu::Window
 			@versus.shoot(2)
 		elsif id == Gosu::KbH
 			@player.bubble
-		elsif id == Gosu::KbJ
+		elsif id == Gosu::KbF
 			@versus.bubble
 		end
 	end
