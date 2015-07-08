@@ -3,6 +3,7 @@ load 'src/vessel.rb'
 load 'src/bullet.rb'
 load 'src/weapon.rb'
 load 'src/boom.rb'
+load 'src/smoke.rb'
 
 WinX = 1920
 WinY = 1080
@@ -25,6 +26,7 @@ class GameWindow < Gosu::Window
  		@old = Gosu::milliseconds
 		@font = Gosu::Font.new(40)
 		@booms = Array.new
+		@smokes = Array.new
 		# @bg = Gosu::draw_rect(500.0, 500.0, 50.0, 50.0, Gosu::Color.argb(0xff00ffff))
 	end
 
@@ -52,19 +54,27 @@ class GameWindow < Gosu::Window
 		@player.move(self.deltatime)
   		@versus.move(self.deltatime)
 
-  		@player.bullarr.each { |b| b.move(self.deltatime)}
-  		@versus.bullarr.each { |b| b.move(self.deltatime)}
+  		@player.bullarr.each do |b|
+  			b.move(self.deltatime)
+  			@smokes.push(Smoke.new(b.x, b.y, b.angle, b.who)) if b.life > 0 && b.force == 2 && rand(1..10) == 2
+  		end
+
+  		@versus.bullarr.each do |b|
+  			b.move(self.deltatime)
+  			@smokes.push(Smoke.new(b.x, b.y, b.angle, b.who)) if b.life > 0 && b.force == 2 && rand(1..10) == 2 
+  		end
 
   		@old = Gosu::milliseconds
 
   		@booms.reject! { |boom| boom.die == true }
+  		@smokes.reject! { |smoke| smoke.die == true }
 
 		@player.bullarr.each do |b|
 			if b.life > 0 && check_for_collide(@versus, b) == 1
 				@booms.push(Boom.new(@versus.x, @versus.y, @versus.angle, @versus.who))
 				Boom.play
-				@player.score += 1 if @versus.life <= 1
-				@versus.hit
+				@versus.hit(b.force)
+				@player.score += 1 if @versus.life <= 0
 				b.life = b.life - 1
 			end
 		end
@@ -72,9 +82,9 @@ class GameWindow < Gosu::Window
 		@versus.bullarr.each do |b|
 			if b.life > 0 && check_for_collide(@player, b) == 1
 				@booms.push(Boom.new(@player.x, @player.y, @player.angle, @player.who))
-				Boom.play
-				@versus.score += 1 if @player.life <= 1
-				@player.hit
+				b.boom
+				@player.hit(b.force)
+				@versus.score += 1 if @player.life <= 0
 				b.life = b.life - 1
 			end
 		end
@@ -82,7 +92,7 @@ class GameWindow < Gosu::Window
 		if check_for_collide(@versus, @player) == 1
 			@booms.push(Boom.new(@versus.x, @versus.y, @versus.angle, @versus.who))
 			@booms.push(Boom.new(@player.x, @player.y, @player.angle, @player.who))
-			Boom.play
+			@player.boom.play
 			@player.warp(WinX / 4 * 3, WinY / 4 * 3)
 			@versus.warp(WinX / 4, WinY / 4)
 			@player.score += 1 if @versus.life <= 1
@@ -94,7 +104,7 @@ class GameWindow < Gosu::Window
 				if b.life > 0 && b2.life > 0 && check_for_b_collide(b, b2) == 1
 					@booms.push(Boom.new(b.x, b.y, b.angle, b.who))
 					@booms.push(Boom.new(b2.x, b2.y, b2.angle, b2.who))
-					Boom.play
+					b.boom
 					b.life = b.life - 1
 					b2.life = b2.life - 1
 				end
@@ -114,11 +124,11 @@ class GameWindow < Gosu::Window
   		# end
   		# @bg.draw
   		100.times do
-  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.3..3.5), rand(0.3..3.5), Gosu::Color.argb(0x4000ffff))
-  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.3..3.5), rand(0.3..3.5), Gosu::Color.argb(0x40ff00ff))
-  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.3..3.5), rand(0.3..3.5), Gosu::Color.argb(0x40ffff00))
-  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.3..3.5), rand(0.3..3.5), Gosu::Color.argb(0x40ffffff))
-  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.3..3.5), rand(0.3..3.5), Gosu::Color.argb(0x40ffffff))
+  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.3..3.0), rand(0.3..3.0), Gosu::Color.argb(0x4000ffff))
+  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.3..3.0), rand(0.3..3.0), Gosu::Color.argb(0x40ff00ff))
+  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.3..3.0), rand(0.3..3.0), Gosu::Color.argb(0x40ffff00))
+  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.3..3.0), rand(0.3..3.0), Gosu::Color.argb(0x40ffffff))
+  			Gosu::draw_rect(rand(0.0..WinX), rand(0.0..WinY), rand(0.3..3.0), rand(0.3..3.0), Gosu::Color.argb(0x40ffffff))
   		end
   		if @acc == 0
   			@player.draw
@@ -135,14 +145,18 @@ class GameWindow < Gosu::Window
   		@player.bullarr.each { |b|  b.draw } 
   		@versus.bullarr.each { |b|  b.draw }
   		@booms.each { |boom| boom.draw}
+  		@smokes.each { |smoke| smoke.draw}
 
-  		@font.draw("Player 1 : #{@versus.score}", WinX / 7, WinY / 20, 3, 1.0, 1.0, 0xff_00ff00)
-  		@font.draw("Player 2 : #{@player.score}", WinX / 7 * 6, WinY / 20, 3, 1.0, 1.0, 0xff_0000ff)
+  		@font.draw("P1 Score: #{@versus.score}", WinX / 7, WinY / 20, 3, 1.0, 1.0, 0xff_00ff00)
+  		@font.draw("P2 Score: #{@player.score}", WinX / 7 * 6, WinY / 20, 3, 1.0, 1.0, 0xff_0000ff)
 
-  		@font.draw("Player 1 life : #{@versus.life}", WinX / 7, WinY / 10, 3, 1.0, 1.0, 0xff_00ff00)
-  		@font.draw("Player 2 life : #{@player.life}", WinX / 7 * 6, WinY / 10, 3, 1.0, 1.0, 0xff_0000ff)
+  		@font.draw("P1 Life : #{@versus.life}", WinX / 7, WinY / 10, 3, 1.0, 1.0, 0xff_00ff00)
+  		@font.draw("P2 Life : #{@player.life}", WinX / 7 * 6, WinY / 10, 3, 1.0, 1.0, 0xff_0000ff)
 
-  		@font.draw("FPS: #{Gosu::fps}", WinX / 7 * 6, WinY / 10 * 9, 3, 1.0, 1.0, 0xff_ff0000)
+  		@font.draw("P1 Rocket : #{@versus.rocket}", WinX / 7, WinY / 20 * 19, 3, 1.0, 1.0, 0xff_00ff00)
+  		@font.draw("P2 Rocket : #{@player.rocket}", WinX / 7 * 6, WinY / 20 * 19, 3, 1.0, 1.0, 0xff_0000ff)
+
+  		@font.draw("FPS: #{Gosu::fps}", WinX / 2, WinY / 20 * 19, 3, 1.0, 1.0, 0xff_ff0000)
 	end
 
 	def check_for_collide(inst1, inst2)
@@ -176,10 +190,14 @@ class GameWindow < Gosu::Window
 			# if @s.playing?
 				@s = @player.vroom.play
 			# end
-		elsif id == 231
-			@player.shoot
-		elsif id == 227
-			@versus.shoot
+		elsif id == Gosu::KbN
+			@player.shoot(1)
+		elsif id == Gosu::KbSpace
+			@versus.shoot(1)
+		elsif id == Gosu::KbK
+			@player.shoot(2)
+		elsif id == Gosu::KbV
+			@versus.shoot(2)
 		end
 	end
 

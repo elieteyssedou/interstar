@@ -1,5 +1,5 @@
 class Vessel
-	attr_reader :angle, :bullarr, :width, :height, :x, :y, :who, :vroom
+	attr_reader :angle, :bullarr, :width, :height, :x, :y, :who, :vroom, :rocket, :boom
 	attr_accessor :score
 
 
@@ -12,8 +12,8 @@ class Vessel
 			@skin = Gosu::Image.new("media/images/vesselvs.png")
 			@skin_on = Gosu::Image.new("media/images/vesselvs-on.png")
 		end
-		@sound = Gosu::Sample.new("media/samples/punch.mp3")
 		@vroom = Gosu::Sample.new("media/samples/starship.wav")
+		@boom = Gosu::Sample.new("media/samples/boom.mp3")
 		@x = @y = @vx = @vy = @angle = 0.0
 		@bullarr = Array.new
 		@width = @skin.width
@@ -26,6 +26,7 @@ class Vessel
 	def warp(x, y)
 		@lst = Gosu::milliseconds
 		@shield = Bubble.new(@who)
+		@rocket = 3
 		@x = x
 		@y = y
 		@life = 3
@@ -76,20 +77,25 @@ class Vessel
 		end
 	end
 
-	def shoot
-		@bullarr << Bullet.new(@angle, @x, @y, @vx, @vy, @who)
-		@sound.play(0.08, 0.5)
+	def shoot(type)
+		if type == 1
+			@bullarr << Bullet.new(@angle, @x, @y, @vx, @vy, @who)
+		elsif type == 2 && @rocket > 0
+			@bullarr << Rocket.new(@angle, @x, @y, @vx, @vy, @who)
+			@rocket -= 1
+		end
+		# @sound.play(0.08, 0.5)
 		@bullarr = @bullarr.drop_while { |b| b.y <= (0 - (b.texture.height / 2)) || b.x <= (0 - (b.texture.width / 2)) || b.y >= (WinY + (b.texture.height / 2)) || b.x >= (WinX + (b.texture.width / 2)) }
 		@bullarr = @bullarr.drop_while { |b| b.life < 1}
 	end
 
-	def hit
+	def hit(force)
 		if @shield
 			@shield.hit
 			@shield = nil
 		else
-			@life -= 1
-			self.warp(@defx, @defy) if @life == 0
+			@life -= force
+			self.warp(@defx, @defy) if @life <= 0
 		end
 	end
 
