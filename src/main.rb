@@ -188,7 +188,7 @@ class GameWindow < Gosu::Window
 		elsif id == Gosu::KbW
 			@vacc = 1
 			# if @s.playing?
-				@s = @player.vroom.play
+				@sv = @player.vroom.play
 			# end
 		elsif id == Gosu::KbN
 			@player.shoot(1)
@@ -207,7 +207,7 @@ class GameWindow < Gosu::Window
 			@s.stop
 		elsif id == Gosu::KbW
 			@vacc = 0
-			@s.stop
+			@sv.stop
 		end
 	end
 end
