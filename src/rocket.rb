@@ -1,16 +1,16 @@
-class Bullet
+class Rocket
 	attr_accessor :x, :y, :life, :force
 	attr_reader :texture, :width, :height, :angle, :who
 
 	def initialize(angle, x, y, vx, vy, who = 0)
 		@who = who
 		if (@who == 1)
-			@texture = Gosu::Image.new("media/images/bullet.png")
+			@texture = Gosu::Image.new("media/images/rocket.png")
 		elsif (@who == 2)
-			@texture = Gosu::Image.new("media/images/bulletvs.png")
+			@texture = Gosu::Image.new("media/images/rocketvs.png")
 		end
-		@boom = Gosu::Sample.new("media/samples/shot.mp3")
-		@launch = Gosu::Sample.new("media/samples/punch.mp3")
+		@boom = Gosu::Sample.new("media/samples/boom.mp3")
+		@launch = Gosu::Sample.new("media/samples/rocket.mp3")
 		@x = x
 		@y = y
 		@vx = vx
@@ -22,19 +22,15 @@ class Bullet
 		@width = @texture.width
 		@height = @texture.height
 		@life = 1
-		@force = 1
+		@force = 3
 
-		@launch.play(0.08, 0.5)
-	end
-
-	def boom
-		@boom.play(0.15, 1)
+		@launch.play(0.06, 2)
 	end
 
 	def hole_warp(x, y, angle)
 		@angle = angle + 90
-		@x = x + Gosu::offset_x(@angle, 30)
-		@y = y + Gosu::offset_y(@angle, 30)
+		@x = x + Gosu::offset_x(@angle, 50)
+		@y = y + Gosu::offset_y(@angle, 50)
 		@vx = Gosu::offset_x(@angle, @vx) + Gosu::offset_x(@angle, 5.0)
 		@vy = Gosu::offset_y(@angle, @vy) + Gosu::offset_y(@angle, 5.0)
 		# @life = 3
@@ -45,9 +41,13 @@ class Bullet
 		@vy += Gosu::offset_y(angle, 0.2)
 	end
 
+	def boom
+		@boom.play(0.10, 1)
+	end
+
 	def move(dt)
-		@x += @vx * dt / 10
-		@y += @vy * dt / 10
+		@x += @vx * dt / 12
+		@y += @vy * dt / 12
 	end
 
 	def draw

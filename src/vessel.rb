@@ -1,5 +1,5 @@
 class Vessel
-	attr_reader :angle, :bullarr, :width, :height, :x, :y, :who, :vroom, :rocket, :boom, :ns
+	attr_reader :angle, :bullarr, :width, :height, :x, :y, :who, :vroom, :rocket, :boom, :ns, :shield
 	attr_accessor :score
 
 
@@ -13,7 +13,7 @@ class Vessel
 			@skin_on = Gosu::Image.new("media/images/vesselvs-on.png")
 		end
 		@vroom = Gosu::Sample.new("media/samples/starship.wav")
-		@boom = Gosu::Sample.new("media/samples/boom.mp3")
+		@boom = Gosu::Sample.new("media/samples/crash.wav")
 		@x = @y = @vx = @vy = @angle = 0.0
 		@bullarr = Array.new
 		@width = @skin.width
@@ -21,6 +21,7 @@ class Vessel
 		@score = 0
 		@defx = defx
 		@defy = defy
+		@lsthole = Gosu::milliseconds
 	end
 
 	def warp(x, y)
@@ -31,6 +32,23 @@ class Vessel
 		@x = x
 		@y = y
 		@life = 3
+	end
+
+	def hole_warp(x, y, angle)
+		if (Gosu::milliseconds - @lsthole > 1000)
+			@angle = angle + 90
+			@x = x + Gosu::offset_x(@angle, 10)
+			@y = y + Gosu::offset_y(@angle, 10)
+			@vx = Gosu::offset_x(@angle, @vx) + Gosu::offset_x(@angle, 20)
+			@vy = Gosu::offset_y(@angle, @vy) + Gosu::offset_y(@angle, 20)
+			@lsthole = Gosu::milliseconds
+		end
+		# @life = 3
+	end
+
+	def hole_acc(angle)
+		@vx += Gosu::offset_x(angle, 0.2)
+		@vy += Gosu::offset_y(angle, 0.2)
 	end
 
 	def accelerate
@@ -64,13 +82,27 @@ class Vessel
 		@vy *= 0.95
 	end
 
-	def draw
-		@skin.draw_rot(@x, @y, 2, @angle)
+	def draw(distance)
+		if distance > 130
+			s = 1
+		# elsif distance < 70
+		# 	s = 70 / 130
+		else
+			s = distance / 130
+		end
+		@skin.draw_rot(@x, @y, 2, @angle, 0.5, 0.5, s, s)
 		@shield.draw(@x, @y) if @shield
 	end
 
-	def draw_on
-		@skin_on.draw_rot(@x, @y, 2, @angle)
+	def draw_on(distance)
+		if distance >= 130
+			s = 1
+		# elsif distance <= 70
+		# 	s = 70 / 130
+		else
+			s = distance / 130
+		end
+		@skin_on.draw_rot(@x, @y, 2, @angle, 0.5, 0.5, s, s)
 		if Gosu::milliseconds - @lst <= 3000
 			@shield.draw(@x, @y) if @shield
 		else
@@ -102,12 +134,12 @@ class Vessel
 			@shield = nil
 		else
 			@life -= force
+			@boom.play(0.4, 2) if @life <= 0
 			self.warp(@defx, @defy) if @life <= 0
 		end
 	end
 
 	def life
-		return @life + @shield.life if @shield
 		@life
 	end
 
