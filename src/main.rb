@@ -330,11 +330,13 @@ class GameWindow < Gosu::Window
 			@acc = 1
 			# if @s.playing?
 				@s = @player.vroom.play
+				@player.moving = true
 			# end
 		elsif id == Gosu::KbW
 			@vacc = 1
 			# if @s.playing?
-				@sv = @player.vroom.play
+				@sv = @versus.vroom.play
+				@versus.moving = true
 			# end
 		elsif id == Gosu::KbJ
 			@player.shoot(1)
@@ -355,9 +357,11 @@ class GameWindow < Gosu::Window
 		if id == Gosu::KbUp
 			@acc = 0
 			@s.stop
+			@player.moving = false
 		elsif id == Gosu::KbW
 			@vacc = 0
 			@sv.stop
+			@versus.moving = false
 		end
 	end
 end

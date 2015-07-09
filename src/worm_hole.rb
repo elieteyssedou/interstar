@@ -79,7 +79,7 @@ class WormHole
 		elsif @step == 2
 			@pass = false
 			self.draw_on
-			@step = 3 if Gosu::milliseconds - @birthday >= 5000 && @pass == true
+			@step = 3 if Gosu::milliseconds - @birthday >= 10000 && @pass == true
 		else
 			self.draw_out
 		end

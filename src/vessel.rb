@@ -1,6 +1,6 @@
 class Vessel
 	attr_reader :angle, :bullarr, :width, :height, :x, :y, :who, :vroom, :rocket, :boom, :ns, :shield
-	attr_accessor :score
+	attr_accessor :score, :moving
 
 
 	def initialize(defx, defy, who = 0)
@@ -22,6 +22,7 @@ class Vessel
 		@defx = defx
 		@defy = defy
 		@lsthole = Gosu::milliseconds
+		@moving = false
 	end
 
 	def warp(x, y)
@@ -57,11 +58,19 @@ class Vessel
 	end
 
 	def turn_left(dt)
-		@angle -= 1 * dt / 3
+		if moving == true
+			@angle -= 1 * dt / 3
+		else
+			@angle -= 0.5 * (@vx.abs + @vy.abs) + 1.5
+		end
 	end
 
 	def turn_right(dt)
-		@angle += 1 * dt / 3
+		if moving == true
+			@angle += 1 * dt / 3
+		else
+			@angle += 0.5 * (@vx.abs + @vy.abs) + 1.5
+		end
 	end
 	
 	def move(dt)
