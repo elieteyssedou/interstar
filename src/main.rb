@@ -7,10 +7,10 @@ load 'src/boom.rb'
 load 'src/smoke.rb'
 load 'src/worm_hole.rb'
 
-# WinX = 2560
-# WinY = 1600
-WinX = 1920
-WinY = 1080
+WinX = 2560
+WinY = 1600
+# WinX = 1920
+# WinY = 1080
 
 class GameWindow < Gosu::Window
 	
@@ -99,8 +99,23 @@ class GameWindow < Gosu::Window
   		end
 
   		if (rand(1..1000) == 66 && @holes.size == 0)
-  			@holes << WormHole.new(rand((WinX / 10)..(WinX / 10 * 9)), rand((WinY / 10)..(WinY / 10 * 9)), rand(0.0..180.0))
-  			@holes << WormHole.new(rand((WinX / 10)..(WinX / 10 * 9)), rand((WinY / 10)..(WinY / 10 * 9)), rand(0.0..180.0))
+  			r1 = rand((WinX / 10)..(WinX / 10 * 9))
+  			r2 = rand((WinY / 10)..(WinY / 10 * 9))
+  			dif = 0
+  			while (dif < WinX / 4)
+  				r3 = rand((WinX / 10)..(WinX / 10 * 9))
+  				dif = r3 - r1
+  				dif = dif.abs
+  			end
+  			r4 = rand((WinY / 10)..(WinY / 10 * 9))
+  			dif = 0
+  			while (dif < WinY / 4)
+  				r4 = rand((WinY / 10)..(WinY / 10 * 9))
+  				dif = r4 - r2
+  				dif = dif.abs
+  			end
+  			@holes << WormHole.new(r1, r2, rand(0.0..180.0))
+  			@holes << WormHole.new(r3, r4, rand(0.0..180.0))
   		end
 
   		@holes.each_with_index do |wh, i|
@@ -161,7 +176,7 @@ class GameWindow < Gosu::Window
 				sp = @versus.hit(b.force)
 				if (sp == 1)
 					b.life = b.life - 1
-					@booms.push(Boom.new(@versus.x, @versus.y, @versus.angle, @versus.who))
+					@booms.push(Boom.new(b.x, b.y, b.angle, @versus.who))
 					Boom.play
 				end
 			end
@@ -173,7 +188,7 @@ class GameWindow < Gosu::Window
 				sp = @player.hit(b.force)
 				if (sp == 1)
 					b.life = b.life - 1
-					@booms.push(Boom.new(@player.x, @player.y, @player.angle, @player.who))
+					@booms.push(Boom.new(b.x, b.y, b.angle, @player.who))
 					b.boom
 				end
 			end

@@ -26,8 +26,7 @@ class Vessel
 	end
 
 	def warp(x, y)
-		@lst = Gosu::milliseconds
-		@lst_r = Gosu::milliseconds
+		@lst = @lst_r = @lst_b = Gosu::milliseconds
 		@shield = Bubble.new(@who)
 		@ns = 1
 		@rocket = 3
@@ -116,7 +115,7 @@ class Vessel
 			s = distance / 130
 		end
 		@skin_on.draw_rot(@x, @y, 2, @angle, 0.5, 0.5, s, s)
-		if Gosu::milliseconds - @lst <= 3000
+		if Gosu::milliseconds - @lst_b <= 3000
 			@shield.draw(@x, @y) if @shield
 		else
 			@shield = nil
@@ -144,7 +143,7 @@ class Vessel
 	end
 
 	def bubble
-		@lst = Gosu::milliseconds
+		@lst_b = Gosu::milliseconds
 		@shield = Bubble.new(@who) if @ns > 0
 		@ns -= 1 if @ns > 0
 	end
@@ -166,6 +165,7 @@ class Vessel
 		return 0 if Gosu::milliseconds - @lst < 1000
 		return 1
 	end
+
 	def life
 		@life
 	end
