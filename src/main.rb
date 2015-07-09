@@ -26,7 +26,7 @@ class GameWindow < Gosu::Window
 		
 		@font = Gosu::Font.new(30, name: "media/fonts/Minecrafter.Alt.ttf")
 
-		@music = Gosu::Song.new("media/samples/stay.mp3")
+		@music = Gosu::Song.new("media/samples/theme.mp3")
  	
  		@player = Vessel.new(WinX / 4 * 3, WinY / 4 * 3, 1)
  		@player.warp(WinX / 4 * 3, WinY / 4 * 3)
