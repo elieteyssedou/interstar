@@ -7,8 +7,8 @@ load 'src/boom.rb'
 load 'src/smoke.rb'
 load 'src/worm_hole.rb'
 
-WinX = 1920
-WinY = 1080
+WinX = 2560
+WinY = 1600
 
 class GameWindow < Gosu::Window
 	
@@ -18,6 +18,8 @@ class GameWindow < Gosu::Window
 
 		@background = Gosu::Image.new("media/images/background.jpg", :tileable => true)
 	
+		@bullet_texture = Gosu::Image.new("media/images/bullet.png")
+		@bullet_vs_texture = Gosu::Image.new("media/images/bulletvs.png")
 		@rocket_texture = Gosu::Image.new("media/images/rocket.png")
 		@rocket_vs_texture = Gosu::Image.new("media/images/rocketvs.png")
 		@shield_texture = Gosu::Image.new("media/images/bubble.png")
@@ -67,6 +69,9 @@ class GameWindow < Gosu::Window
 		if Gosu::button_down? Gosu::KbW or Gosu::button_down? Gosu::GpButton0 then
 			@versus.accelerate
 		end
+
+		@player.recharge
+  		@versus.recharge
 
 		@player.move(self.deltatime)
   		@versus.move(self.deltatime)
@@ -150,25 +155,30 @@ class GameWindow < Gosu::Window
 
 		@player.bullarr.each do |b|
 			if b.life > 0 && check_for_collide(@versus, b) == 1
-				@booms.push(Boom.new(@versus.x, @versus.y, @versus.angle, @versus.who))
-				Boom.play
 				@player.score += 1 if @versus.life - b.force == 0
-				@versus.hit(b.force)
-				b.life = b.life - 1
+				sp = @versus.hit(b.force)
+				if (sp == 1)
+					b.life = b.life - 1
+					@booms.push(Boom.new(@versus.x, @versus.y, @versus.angle, @versus.who))
+					Boom.play
+				end
 			end
 		end
 
 		@versus.bullarr.each do |b|
 			if b.life > 0 && check_for_collide(@player, b) == 1
-				@booms.push(Boom.new(@player.x, @player.y, @player.angle, @player.who))
-				b.boom
 				@versus.score += 1 if @player.life - b.force == 0
-				@player.hit(b.force)
-				b.life = b.life - 1
+				sp = @player.hit(b.force)
+				if (sp == 1)
+					b.life = b.life - 1
+					@booms.push(Boom.new(@player.x, @player.y, @player.angle, @player.who))
+					b.boom
+				end
 			end
 		end
 
 		if check_for_collide(@versus, @player) == 1
+			if (@versus.sp == 1 && @player.sp == 1)
 			@booms.push(Boom.new(@versus.x, @versus.y, @versus.angle, @versus.who))
 			@booms.push(Boom.new(@player.x, @player.y, @player.angle, @player.who))
 			@player.boom.play(0.4, 2)
@@ -176,6 +186,7 @@ class GameWindow < Gosu::Window
 			@versus.warp(WinX / 4, WinY / 4)
 			@player.score += 1 if @versus.life <= 1
 			@versus.score += 1 if @player.life <= 1
+			end
 		end
 
 		@versus.bullarr.each do |b|
@@ -275,6 +286,18 @@ class GameWindow < Gosu::Window
   		# @font.draw("P2 Shield : #{@player.ns}", WinX / 7 * 6, WinY / 10 * 9, 3, 1.0, 1.0, 0xff_0000ff)
 
   		t = 1.0
+  		@versus.bullet.times do
+  			@bullet_vs_texture.draw(WinX / 7 * t, WinY / 15 * 14, 3)
+  			t += 0.0625
+  		end
+
+  		t = 0.0
+  		@player.bullet.times do
+  			@bullet_texture.draw(WinX / 7 * (6 + t), WinY / 15 * 14, 3)
+  			t += 0.0625
+  		end
+
+		t = 1.0
   		@versus.rocket.times do
   			@rocket_vs_texture.draw(WinX / 7 * t, WinY / 20 * 19, 3)
   			t += 0.125

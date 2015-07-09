@@ -1,5 +1,5 @@
 class Vessel
-	attr_reader :angle, :bullarr, :width, :height, :x, :y, :who, :vroom, :rocket, :boom, :ns, :shield
+	attr_reader :angle, :bullarr, :width, :height, :x, :y, :who, :vroom, :rocket, :bullet, :boom, :ns, :shield
 	attr_accessor :score, :moving
 
 
@@ -27,9 +27,11 @@ class Vessel
 
 	def warp(x, y)
 		@lst = Gosu::milliseconds
+		@lst_r = Gosu::milliseconds
 		@shield = Bubble.new(@who)
 		@ns = 1
 		@rocket = 3
+		@bullet = 10
 		@x = x
 		@y = y
 		@life = 3
@@ -92,6 +94,7 @@ class Vessel
 	end
 
 	def draw(distance)
+		return 0 if Gosu::milliseconds - @lst < 1000
 		if distance > 130
 			s = 1
 		# elsif distance < 70
@@ -104,6 +107,7 @@ class Vessel
 	end
 
 	def draw_on(distance)
+		return 0 if Gosu::milliseconds - @lst < 1000
 		if distance >= 130
 			s = 1
 		# elsif distance <= 70
@@ -120,8 +124,9 @@ class Vessel
 	end
 
 	def shoot(type)
-		if type == 1
+		if type == 1 && bullet > 0
 			@bullarr << Bullet.new(@angle, @x, @y, @vx, @vy, @who)
+			@bullet -= 1
 		elsif type == 2 && @rocket > 0
 			@bullarr << Rocket.new(@angle, @x, @y, @vx, @vy, @who)
 			@rocket -= 1
@@ -131,6 +136,13 @@ class Vessel
 		@bullarr = @bullarr.drop_while { |b| b.life < 1}
 	end
 
+	def recharge
+		if @bullet < 10 && Gosu::milliseconds - @lst_r > 1000
+			@bullet += 1
+			@lst_r = Gosu::milliseconds 
+		end
+	end
+
 	def bubble
 		@lst = Gosu::milliseconds
 		@shield = Bubble.new(@who) if @ns > 0
@@ -138,6 +150,7 @@ class Vessel
 	end
 
 	def hit(force)
+		return 0 if Gosu::milliseconds - @lst < 1000
 		if @shield
 			@shield.hit
 			@shield = nil
@@ -146,8 +159,13 @@ class Vessel
 			@boom.play(0.4, 2) if @life <= 0
 			self.warp(@defx, @defy) if @life <= 0
 		end
+		return 1
 	end
 
+	def sp
+		return 0 if Gosu::milliseconds - @lst < 1000
+		return 1
+	end
 	def life
 		@life
 	end
