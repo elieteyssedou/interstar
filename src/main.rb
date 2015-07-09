@@ -274,13 +274,13 @@ class GameWindow < Gosu::Window
 
   		t = 1.0
   		@versus.ns.times do
-  			@heart_blue_texture.draw(WinX / 7 * t, WinY / 10 * 9, 3)
+  			@heart_blue_texture.draw(WinX / 7 * t, WinY / 7 * 6, 3)
   			t += 0.125
   		end
 
   		t = 0.0
   		@player.ns.times do
-  			@heart_blue_texture.draw(WinX / 7 * (6 + t), WinY / 10 * 9, 3)
+  			@heart_blue_texture.draw(WinX / 7 * (6 + t), WinY / 7 * 6, 3)
   			t += 0.125
   		end
 
@@ -289,25 +289,25 @@ class GameWindow < Gosu::Window
 
   		t = 1.0
   		@versus.bullet.times do
-  			@bullet_vs_texture.draw(WinX / 7 * t, WinY / 15 * 14, 3)
+  			@bullet_vs_texture.draw(WinX / 7 * t, WinY / 20 * 19, 3)
   			t += 0.0625
   		end
 
   		t = 0.0
   		@player.bullet.times do
-  			@bullet_texture.draw(WinX / 7 * (6 + t), WinY / 15 * 14, 3)
+  			@bullet_texture.draw(WinX / 7 * (6 + t), WinY / 20 * 19, 3)
   			t += 0.0625
   		end
 
 		t = 1.0
   		@versus.rocket.times do
-  			@rocket_vs_texture.draw(WinX / 7 * t, WinY / 20 * 19, 3)
+  			@rocket_vs_texture.draw(WinX / 7 * t, WinY / 10 * 9, 3, 0.8, 0.8)
   			t += 0.125
   		end
 
   		t = 0.0
   		@player.rocket.times do
-  			@rocket_texture.draw(WinX / 7 * (6 + t), WinY / 20 * 19, 3)
+  			@rocket_texture.draw(WinX / 7 * (6 + t), WinY / 10 * 9, 3, 0.8, 0.8)
   			t += 0.125
   		end
   		# @font.draw("P1 Rocket : #{@versus.rocket}", WinX / 7, WinY / 20 * 19, 3, 1.0, 1.0, 0xff_00ff00)
