@@ -7,8 +7,10 @@ load 'src/boom.rb'
 load 'src/smoke.rb'
 load 'src/worm_hole.rb'
 
-WinX = 2560
-WinY = 1600
+# WinX = 2560
+# WinY = 1600
+WinX = 1920
+WinY = 1080
 
 class GameWindow < Gosu::Window
 	
