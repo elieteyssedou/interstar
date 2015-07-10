@@ -26,21 +26,26 @@ class Vessel
 	end
 
 	def warp(x, y)
-		@lst = @lst_r = @lst_b = Gosu::milliseconds
+		@lst = @lst_r = @lst_b = @lst_ast = Gosu::milliseconds
 		@shield = Bubble.new(@who)
 		@ns = 1
 		@rocket = 3
 		@bullet = 10
 		@x = x
 		@y = y
+		if who == 2
+			@angle = 180
+		else
+			@angle = 0
+		end
 		@life = 3
 	end
 
 	def hole_warp(x, y, angle)
 		if (Gosu::milliseconds - @lsthole > 1000)
 			@angle = angle + 90
-			@x = x + Gosu::offset_x(@angle, 10)
-			@y = y + Gosu::offset_y(@angle, 10)
+			@x = x + Gosu::offset_x(@angle, 5)
+			@y = y + Gosu::offset_y(@angle, 5)
 			@vx = Gosu::offset_x(@angle, @vx) + Gosu::offset_x(@angle, 20)
 			@vy = Gosu::offset_y(@angle, @vy) + Gosu::offset_y(@angle, 20)
 			@lsthole = Gosu::milliseconds
@@ -59,7 +64,7 @@ class Vessel
 	end
 
 	def turn_left(dt)
-		if moving == true
+		if @moving == true
 			@angle -= 1 * dt / 3
 		else
 			@angle -= 0.5 * (@vx.abs + @vy.abs) + 1.5
@@ -67,7 +72,7 @@ class Vessel
 	end
 
 	def turn_right(dt)
-		if moving == true
+		if @moving == true
 			@angle += 1 * dt / 3
 		else
 			@angle += 0.5 * (@vx.abs + @vy.abs) + 1.5
@@ -148,7 +153,9 @@ class Vessel
 		@ns -= 1 if @ns > 0
 	end
 
-	def hit(force)
+	def hit(force, ast = false)
+		return 2 if ast == true && Gosu::milliseconds - @lst_ast < 500
+		@lst_ast = Gosu::milliseconds if ast == 1
 		return 0 if Gosu::milliseconds - @lst < 1000
 		if @shield
 			@shield.hit

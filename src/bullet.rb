@@ -19,6 +19,8 @@ class Bullet
 		@vx += Gosu::offset_x(@angle, 5.0)
 		@vy += Gosu::offset_y(@angle, 5.0)
 
+		@lsthole = Gosu::milliseconds
+
 		@width = @texture.width
 		@height = @texture.height
 		@life = 1
@@ -32,12 +34,14 @@ class Bullet
 	end
 
 	def hole_warp(x, y, angle)
-		@angle = angle + 90
-		@x = x + Gosu::offset_x(@angle, 30)
-		@y = y + Gosu::offset_y(@angle, 30)
-		@vx = Gosu::offset_x(@angle, @vx) + Gosu::offset_x(@angle, 5.0)
-		@vy = Gosu::offset_y(@angle, @vy) + Gosu::offset_y(@angle, 5.0)
-		# @life = 3
+		if (Gosu::milliseconds - @lsthole > 1000)
+			@angle = angle + 90
+			@x = x + Gosu::offset_x(@angle, 5)
+			@y = y + Gosu::offset_y(@angle, 5)
+			@vx = Gosu::offset_x(@angle, @vx) + Gosu::offset_x(@angle, 20)
+			@vy = Gosu::offset_y(@angle, @vy) + Gosu::offset_y(@angle, 20)
+			@lsthole = Gosu::milliseconds
+		end
 	end
 
 	def hole_acc(angle)
@@ -52,7 +56,7 @@ class Bullet
 
 	def draw
 		if @life > -1
-			@texture.draw_rot(@x, @y, 2, @angle) 
+			@texture.draw_rot(@x, @y, 1, @angle) 
 			@life = -1 if @life == 0
 		end
 	end

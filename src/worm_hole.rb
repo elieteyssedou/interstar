@@ -17,8 +17,8 @@ class WormHole
 		@pass = false
 	end
 
-	def play
-		@sound.play(0.4, 1)
+	def play(vol = 0.35, speed = 1)
+		@sound.play(vol, speed)
 	end
 
 	def draw_in

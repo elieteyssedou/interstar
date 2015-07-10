@@ -1,14 +1,16 @@
 class Boom
 	attr_reader :die
-	def initialize(x, y, angle, who)
+	def initialize(x, y, angle, who = 1)
 		@x = x
 		@y = y
 		@angle = angle
 		@@sound = Gosu::Sample.new("media/samples/shot.mp3")
-		if who == 1
-			@animation = Gosu::Image::load_tiles("media/images/boomvs.png", 75, 70, :tileable => false)
-		else
+		if who == 1 #player
 			@animation = Gosu::Image::load_tiles("media/images/boom.png", 75, 70, :tileable => false)
+		elsif who == 2 #versus
+			@animation = Gosu::Image::load_tiles("media/images/boomvs.png", 75, 70, :tileable => false)
+		elsif who == 3 #asteroid
+			@animation = Gosu::Image::load_tiles("media/images/boomast.png", 75, 70, :tileable => false)
 		end
 		@die = false
 		@bool = false
