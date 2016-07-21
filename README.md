@@ -1,5 +1,2 @@
-# interstar
-cd ;
-cd Desktop ;
-cd interstar ;
+# Interstar
 ruby src/main.rb
