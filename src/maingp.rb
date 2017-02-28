@@ -15,13 +15,13 @@ WinY = 1600
 # WinY = 1080
 
 class GameWindow < Gosu::Window
-
+	
 	def initialize
-    	super(WinX, WinY)
+    	super(WinX, WinY, :fullscreen => true)
     	self.caption = "Hart"
 
 		@background = Gosu::Image.new("media/images/background.jpg", :tileable => true)
-
+	
 		@bullet_texture = Gosu::Image.new("media/images/bullet.png")
 		@bullet_vs_texture = Gosu::Image.new("media/images/bulletvs.png")
 		@rocket_texture = Gosu::Image.new("media/images/rocket.png")
@@ -29,7 +29,7 @@ class GameWindow < Gosu::Window
 		@shield_texture = Gosu::Image.new("media/images/bubble.png")
 		@heart_texture = Gosu::Image.new("media/images/heart-pixel.png")
 		@heart_blue_texture = Gosu::Image.new("media/images/heart-pixel-blue.png")
-
+		
 		@font = Gosu::Font.new(30, name: "media/fonts/Minecrafter.Alt.ttf")
 
 		r = rand(1..2)
@@ -44,11 +44,11 @@ class GameWindow < Gosu::Window
  		@player.warp(WinX / 4 * 3, WinY / 4 * 3)
  		@versus = Vessel.new(WinX / 4, WinY / 4, 2)
  		@versus.warp(WinX / 4, WinY / 4)
-
+ 	
  		@acc = @vacc = 0
-
+ 	
  		@old = Gosu::milliseconds
-
+		
 		@booms = Array.new
 		@smokes = Array.new
 		@holes = Array.new
@@ -56,27 +56,28 @@ class GameWindow < Gosu::Window
 		@asteroids = Array.new
 
 		@ls = LaunchScreen.new
+		# @ls.draw
 
 		end
 
 	def update
-		if Gosu::button_down? Gosu::KbLeft or Gosu::button_down? Gosu::GpLeft then
+		if Gosu::button_down? Gosu::GpLeft then
 			@player.turn_left(self.deltatime)
     	end
-		if Gosu::button_down? Gosu::KbRight or Gosu::button_down? Gosu::GpRight then
+		if Gosu::button_down? Gosu::GpRight then
 			@player.turn_right(self.deltatime)
 		end
-		if Gosu::button_down? Gosu::KbUp or Gosu::button_down? Gosu::GpButton0 then
+		if Gosu::button_down? 282 or Gosu::button_down? Gosu::GpUp then
 			@player.accelerate
 		end
 
-		if Gosu::button_down? Gosu::KbA or Gosu::button_down? Gosu::GpLeft then
+		if Gosu::button_down? Gosu::KbLeft then
 			@versus.turn_left(self.deltatime)
     	end
-		if Gosu::button_down? Gosu::KbD or Gosu::button_down? Gosu::GpRight then
+		if Gosu::button_down? Gosu::KbRight then
 			@versus.turn_right(self.deltatime)
 		end
-		if Gosu::button_down? Gosu::KbW or Gosu::button_down? Gosu::GpButton0 then
+		if Gosu::button_down? Gosu::KbUp then
 			@versus.accelerate
 		end
 
@@ -93,7 +94,7 @@ class GameWindow < Gosu::Window
 
   		@versus.bullarr.each do |b|
   			b.move(self.deltatime)
-  			@smokes.push(Smoke.new(b.x, b.y, b.angle, b.who)) if b.life > 0 && b.force == 3 && rand(1..10) == 2
+  			@smokes.push(Smoke.new(b.x, b.y, b.angle, b.who)) if b.life > 0 && b.force == 3 && rand(1..10) == 2 
   		end
 
   		@asteroids.each do |a|
@@ -282,7 +283,7 @@ class GameWindow < Gosu::Window
 					Boom.play
 				end
 			end
-
+			
 			@versus.bullarr.each do |b|
 				if b.life > 0 && a.life > 0 && check_for_a_collide(a, b) == 1
 					b.life -= 1
@@ -337,79 +338,79 @@ class GameWindow < Gosu::Window
   				a = Gosu::distance(@versus.x, @versus.y, h.x, h.y)
   				d2 = a if a < d2
   			end
-
+	
   			if @acc == 0
   				@player.draw(d)
   			else
   				@player.draw_on(d)
   			end
-
+	
   			if @vacc == 0
   				@versus.draw(d2)
   			else
   				@versus.draw_on(d2)
   			end
-
-  			@player.bullarr.each { |b|  b.draw }
+	
+  			@player.bullarr.each { |b|  b.draw } 
   			@versus.bullarr.each { |b|  b.draw }
   			@booms.each { |boom| boom.draw }
   			@smokes.each { |smoke| smoke.draw }
   			@holes.each { |hole| hole.draw }
   			@asteroids.each { |asteroid| asteroid.draw}
-
+	
   			@font.draw("#{@versus.score}", WinX / 7, WinY / 20, 3, 1.0, 1.0, 0xff_9040ff)
   			@font.draw("#{@player.score}", WinX / 7 * 6, WinY / 20, 3, 1.0, 1.0, 0xff_dd2040)
-
+	
   			# @font.draw("P1 Life : #{@versus.life}", WinX / 7, WinY / 10, 3, 1.0, 1.0, 0xff_00ff00)
   			# @font.draw("P2 Life : #{@player.life}", WinX / 7 * 6, WinY / 10, 3, 1.0, 1.0, 0xff_0000ff)
-
+	
   			t = 1.0
   			@versus.life.times do
   				@heart_texture.draw(WinX / 7 * t, WinY / 10, 3)
   				t += 0.125
   			end
   			@heart_blue_texture.draw(WinX / 7 * t, WinY / 10, 3) if @versus.shield
-
+	
   			t = 0.0
   			@player.life.times do
   				@heart_texture.draw(WinX / 7 * (6 + t), WinY / 10, 3)
   				t += 0.125
   			end
   			@heart_blue_texture.draw(WinX / 7 * (6 + t), WinY / 10, 3) if @player.shield
-
+	
   			t = 1.0
   			@versus.ns.times do
   				@heart_blue_texture.draw(WinX / 7 * t, WinY / 7 * 6, 3)
   				t += 0.125
   			end
-
+	
   			t = 0.0
   			@player.ns.times do
   				@heart_blue_texture.draw(WinX / 7 * (6 + t), WinY / 7 * 6, 3)
   				t += 0.125
   			end
-
+	
   			# @font.draw("P1 Shield : #{@versus.ns}", WinX / 7, WinY / 10 * 9, 3, 1.0, 1.0, 0xff_00ff00)
   			# @font.draw("P2 Shield : #{@player.ns}", WinX / 7 * 6, WinY / 10 * 9, 3, 1.0, 1.0, 0xff_0000ff)
-
+	
   			t = 1.0
   			@versus.bullet.times do
   				@bullet_vs_texture.draw(WinX / 7 * t, WinY / 20 * 19, 3)
   				t += 0.0625
   			end
-
+	
   			t = 0.0
   			@player.bullet.times do
   				@bullet_texture.draw(WinX / 7 * (6 + t), WinY / 20 * 19, 3)
   				t += 0.0625
   			end
-
+	
 			t = 1.0
   			@versus.rocket.times do
   				@rocket_vs_texture.draw(WinX / 7 * t, WinY / 10 * 9, 3, 0.8, 0.8)
   				t += 0.125
   			end
-
+	
   			t = 0.0
   			@player.rocket.times do
   				@rocket_texture.draw(WinX / 7 * (6 + t), WinY / 10 * 9, 3, 0.8, 0.8)
@@ -417,7 +418,7 @@ class GameWindow < Gosu::Window
   			end
   			# @font.draw("P1 Rocket : #{@versus.rocket}", WinX / 7, WinY / 20 * 19, 3, 1.0, 1.0, 0xff_00ff00)
   			# @font.draw("P2 Rocket : #{@player.rocket}", WinX / 7 * 6, WinY / 20 * 19, 3, 1.0, 1.0, 0xff_0000ff)
-
+	
   			@font.draw("FPS: #{Gosu::fps}", WinX / 2, WinY / 20 * 19, 3, 1.0, 1.0, 0xff_202020)
 		end
 	end
@@ -464,39 +465,39 @@ class GameWindow < Gosu::Window
 	def button_down(id)
 		if id == Gosu::KbEscape
 			close
-		elsif id == Gosu::KbUp
+		elsif id == 282 || id == Gosu::GpUp
 			@acc = 1
 			# if @s.playing?
 				@s = @player.vroom.play
 				@player.moving = true
 			# end
-		elsif id == Gosu::KbW
+		elsif id == Gosu::KbUp
 			@vacc = 1
 			# if @s.playing?
 				@sv = @versus.vroom.play
 				@versus.moving = true
 			# end
-		elsif id == Gosu::KbK
+		elsif id == Gosu::GpButton1
 			@player.shoot(1)
 		elsif id == Gosu::KbSpace
 			@versus.shoot(1)
-		elsif id == Gosu::KbL
+		elsif id == Gosu::GpButton0
 			@player.shoot(2)
-		elsif id == Gosu::KbV
+		elsif id == 227
 			@versus.shoot(2)
-		elsif id == Gosu::KbJ
+		elsif id == 281
 			@player.bubble
-		elsif id == Gosu::KbF
+		elsif id == Gosu::KbDown
 			@versus.bubble
 		end
 	end
 
 	def button_up(id)
-		if id == Gosu::KbUp
+		if id == 282 || id == Gosu::GpUp 
 			@acc = 0
 			@s.stop
 			@player.moving = false
-		elsif id == Gosu::KbW
+		elsif id == Gosu::KbUp
 			@vacc = 0
 			@sv.stop
 			@versus.moving = false
